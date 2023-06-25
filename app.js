@@ -6,6 +6,8 @@ const cookieParser = require("cookie-parser")
 const app = express();
 
 app.use(cookieParser())
+app.use(cors());
+app.use(json())
 mongoose.connect("mongodb://127.0.0.1:27017/virtualDoc")
 .then(()=>{
     console.log("Database connected");

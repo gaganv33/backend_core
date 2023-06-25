@@ -3,7 +3,9 @@ const express = require('express');
 const User = require("../models/User")
 const Login = require("../models/Logins")
 const crypto = require("crypto")
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
+const { authenticateRequest } = require('../middleware/auth');
+const Logins = require('../models/Logins');
 
 const router = express.Router()
 
@@ -28,7 +30,7 @@ router.post("/login" , async(req , res , next)=>{
         const {email , password} = req.body;
         const foundUser = await User.findOne({email});
         if(!foundUser) return res.status(404).json({err : "User not found"});
-        if(foundUser.password != password) return res.status(403).json({err : "Passwords dont match"});
+        if(!bcrypt.compareSync(password , foundUser.password)) return res.status(403).json({err : "Passwords dont match"});
         const token = crypto.randomBytes(64).toString('hex');
         await Login.create({
             userId : foundUser._id,
@@ -42,6 +44,25 @@ router.post("/login" , async(req , res , next)=>{
         })
         res.status(200).json({msg : "Login completed"})
 
+    }catch(err){
+        next(err)
+    }
+})
+
+router.get("/protected" , authenticateRequest , async(req , res , next)=>{
+    res.send("Hello from protected resource");
+})
+
+router.patch("/logout" , async(req , res , next)=>{
+    try{
+        if(!req.cookies.auth_tkn) return res.status(401).json({err : "You need to login to access this resource"});
+        await Logins.findOneAndDelete({token : req.cookies.auth_tkn});
+        res.clearCookie("auth_tkn" , {
+            expiresIn : 1000 * 86400 ,   // 24 hours
+            httpOnly : true,
+            sameSite : "strict"
+        })
+        return res.status(200).json({msg : "You are logged out"});
     }catch(err){
         next(err)
     }
