@@ -17,3 +17,10 @@ module.exports.authenticateRequest = async(req , res , next)=>{
     }
     
 }
+
+module.exports.isDoctor = (req , res , next)=>{
+    if(req.user.roleType != "DOCTOR"){
+        return res.status(403).json({err : "You are not allowed to perform this operation"});
+    }
+    next();
+}
