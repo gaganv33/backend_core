@@ -6,6 +6,8 @@ const crypto = require("crypto")
 const bcrypt = require("bcryptjs");
 const { authenticateRequest } = require('../middleware/auth');
 const Logins = require('../models/Logins');
+const Doctor = require('../models/Doctor');
+const Patient = require('../models/Patient');
 
 const router = express.Router()
 
@@ -19,6 +21,14 @@ router.post("/register" , async (req , res , next)=>{
         const salt =  await bcrypt.genSalt(10);
         req.body.password = await bcrypt.hash(password , salt);
         const newUser = await User.create({...req.body , roleType})
+        if(newUser.roleType == 'DOCTOR'){
+            const newDoc = await Doctor.create({});
+            newUser.DoctorData = newDoc._id;
+            await newUser.save();
+        }
+        const newPatient = await Patient.create({});
+        newUser.PatientData = newPatient._id;
+        await newUser.save();
         res.status(200).json({user : newUser , msg : "Registered successfully. Please Login"})
     }catch(err){
         next(err)

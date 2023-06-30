@@ -5,4 +5,4 @@ const PatientSchema = new mongoose.Schema({
     nextAppointment : {type : mongoose.Types.ObjectId , ref : "appointments"}
 })
 
-module.exports = mongoose.Model("patient_info" , PatientSchema )
+module.exports = mongoose.model("patient_info" , PatientSchema )

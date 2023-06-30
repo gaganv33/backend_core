@@ -1,9 +1,7 @@
 const mongoose = require("mongoose")
 
 const DiseaseSchema = new mongoose.Schema({
-    name : {type : String , required : true},
-    image : {type : String},
-    formData : {type : String}  //contains json string of diseases info
+    name : {type : String , required : true}
 })
 
-module.exports = mongoose.Model("diseases" , DiseaseSchema)
+module.exports = mongoose.model("diseases" , DiseaseSchema)

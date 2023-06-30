@@ -19,6 +19,9 @@ mongoose.connect("mongodb://127.0.0.1:27017/virtualDoc")
 const authRoutes = require("./routes/auth")
 app.use("/auth" , authRoutes);
 
+const doctorRoutes = require("./routes/doctor")
+app.use("/doctor" , doctorRoutes)
+
 const PORT = process.env.PORT || 3000;
 app.listen(3000 , ()=>{
     console.log(`Server started on ${PORT}`);
